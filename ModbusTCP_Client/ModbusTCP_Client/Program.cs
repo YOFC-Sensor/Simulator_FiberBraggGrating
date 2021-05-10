@@ -17,7 +17,7 @@ namespace ModbusTCP_Client
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new CLient_Form());
+            Application.Run(new ClientForm());
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <Root>
-	<Server ipAddr="" port="" number="">
+	<Server ipAddr="192.168.8.180" port="502" number="01">
 		<Channel>
-			<Sensor number="00101" data="" />
-			<Sensor number="00102" data="" />
-			<Sensor number="00103" data="" />
+			<Sensor number="00101" data="0001E24000311595" />
+			<Sensor number="00102" data="0001E24000311595" />
+			<Sensor number="00103" data="0001E24000311595" />
 		</Channel>
 	</Server>
 </Root>
