@@ -32,7 +32,7 @@ namespace ModbusTCP_Client
             this.Disconnect_Button = new System.Windows.Forms.Button();
             this.Get_Data_Button = new System.Windows.Forms.Button();
             this.Recv_TextBox = new System.Windows.Forms.TextBox();
-            this.Start_Sensor_Number_Tabel = new System.Windows.Forms.Label();
+            this.Start_Sensor_Number_Label = new System.Windows.Forms.Label();
             this.Start_Sensor_Number_TextBox = new System.Windows.Forms.TextBox();
             this.Sensor_Count_Label = new System.Windows.Forms.Label();
             this.Sensor_Count_TextBox = new System.Windows.Forms.TextBox();
@@ -75,15 +75,15 @@ namespace ModbusTCP_Client
             this.Recv_TextBox.Size = new System.Drawing.Size(678, 556);
             this.Recv_TextBox.TabIndex = 8;
             // 
-            // Start_Sensor_Number_Tabel
+            // Start_Sensor_Number_Label
             // 
-            this.Start_Sensor_Number_Tabel.AutoSize = true;
-            this.Start_Sensor_Number_Tabel.Location = new System.Drawing.Point(685, 21);
-            this.Start_Sensor_Number_Tabel.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.Start_Sensor_Number_Tabel.Name = "Start_Sensor_Number_Tabel";
-            this.Start_Sensor_Number_Tabel.Size = new System.Drawing.Size(154, 24);
-            this.Start_Sensor_Number_Tabel.TabIndex = 3;
-            this.Start_Sensor_Number_Tabel.Text = "起始传感器编号：";
+            this.Start_Sensor_Number_Label.AutoSize = true;
+            this.Start_Sensor_Number_Label.Location = new System.Drawing.Point(685, 21);
+            this.Start_Sensor_Number_Label.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.Start_Sensor_Number_Label.Name = "Start_Sensor_Number_Label";
+            this.Start_Sensor_Number_Label.Size = new System.Drawing.Size(154, 24);
+            this.Start_Sensor_Number_Label.TabIndex = 3;
+            this.Start_Sensor_Number_Label.Text = "起始传感器编号：";
             // 
             // Start_Sensor_Number_TextBox
             // 
@@ -187,7 +187,7 @@ namespace ModbusTCP_Client
             this.Controls.Add(this.Sensor_Count_TextBox);
             this.Controls.Add(this.Sensor_Count_Label);
             this.Controls.Add(this.Start_Sensor_Number_TextBox);
-            this.Controls.Add(this.Start_Sensor_Number_Tabel);
+            this.Controls.Add(this.Start_Sensor_Number_Label);
             this.Controls.Add(this.Recv_TextBox);
             this.Controls.Add(this.Get_Data_Button);
             this.Controls.Add(this.Disconnect_Button);
@@ -204,7 +204,7 @@ namespace ModbusTCP_Client
         private System.Windows.Forms.Button Disconnect_Button;
         private System.Windows.Forms.Button Get_Data_Button;
         private System.Windows.Forms.TextBox Recv_TextBox;
-        private System.Windows.Forms.Label Start_Sensor_Number_Tabel;
+        private System.Windows.Forms.Label Start_Sensor_Number_Label;
         private System.Windows.Forms.TextBox Start_Sensor_Number_TextBox;
         private System.Windows.Forms.Label Sensor_Count_Label;
         private System.Windows.Forms.TextBox Sensor_Count_TextBox;
@@ -212,7 +212,6 @@ namespace ModbusTCP_Client
         private System.Windows.Forms.Button Connect_Button;
         private System.Windows.Forms.ListView Mac_ListView;
         private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.ColumnHeader Mac_Name1;
         private System.Windows.Forms.ColumnHeader Mac_Name;
         private System.Windows.Forms.ColumnHeader Mac_Addr;
         private System.Windows.Forms.ColumnHeader Mac_State;

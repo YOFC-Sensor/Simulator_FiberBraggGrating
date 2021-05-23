@@ -24,7 +24,7 @@ namespace ModbusTCP_Client
             //一键连接按钮点击事件
             Connect_Button.Click += Connect_Button_Click;
             //断开连接按钮点击事件
-            Disconnect_Button.Click += Disconnect_Mac_Button_Click;
+            Disconnect_Button.Click += Disconnect_Button_Click;
             //刷新设备按钮点击事件
             Refresh_Mac_Button.Click += Refresh_Mac_Button_Click;
             //启用设备按钮点击事件
@@ -43,9 +43,13 @@ namespace ModbusTCP_Client
             t.Start();
         }
 
-        public void Disconnect_Mac_Button_Click(Object sender, EventArgs e)
+        public void Disconnect_Button_Click(Object sender, EventArgs e)
         {
-
+            for (int i = 0; i < macInfoList.Count; i++)
+            {
+                macInfoList[i].socket.Disconnect(true);
+                macInfoList[i].isUserDisconnect = true;
+            }
         }
 
         public void Refresh_Mac_Button_Click(Object sender, EventArgs e)
@@ -108,15 +112,11 @@ namespace ModbusTCP_Client
                 listViewItem.SubItems.Add(numberStr.Length > 1 ? numberStr : "0" + numberStr);
                 listViewItem.SubItems.Add(macInfo.serverPoint.ToString());
                 listViewItem.SubItems.Add("未连接");
-                Mac_ListView.EndInvoke(Mac_ListView.BeginInvoke(new Action(() => {
-                    Mac_ListView.Items.Add(listViewItem);
-                })));                
+                Mac_ListView.Items.Add(listViewItem);
             }
             if (macInfoList.Count > 0)
             {
-                Mac_ListView.EndInvoke(Mac_ListView.BeginInvoke(new Action(() => {
-                    Mac_ListView.Items[0].Selected = true;
-                })));
+                Mac_ListView.Items[0].Selected = true;
             }
         }
 
@@ -327,7 +327,7 @@ namespace ModbusTCP_Client
         public static void CycleReciveData(MacInfo macInfo, ClientForm form)
         {
             int index = macInfoList.IndexOf(macInfo);
-            while (!macInfo.isUserDisconnect)
+            while (macInfo.socket.Connected)
             {
                 byte[] recvData = reciveAndAnalysis.ReciveFrame(macInfo.socket);
                 if (recvData == null)

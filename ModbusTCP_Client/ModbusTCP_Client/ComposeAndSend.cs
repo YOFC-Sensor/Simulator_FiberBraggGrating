@@ -16,7 +16,7 @@ namespace ModbusTCP_Client
         /// <param name="startSensorNumber"></param>
         /// <param name="byteCount"></param>
         /// <returns></returns>
-        public byte[] CombineComputerFrame(byte macNumber, byte[] startSensorNumber, byte[] sensorCount)
+        public byte[] CombineComputerFrame(byte macNumber, byte[] startSensorNumber, byte[] byteCount)
         {
             ClientFrameInfo clientFrameInfo = new ClientFrameInfo();
             clientFrameInfo.startBytes = new byte[] { 00, 00, 00, 00, 00 };
