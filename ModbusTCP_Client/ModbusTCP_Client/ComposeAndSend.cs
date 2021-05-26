@@ -7,35 +7,32 @@ namespace ModbusTCP_Client
 {
     public class ComposeAndSend
     {
-        FrameHandle frameHandle = new FrameHandle();
+        private FrameHandle frameHandle = new FrameHandle();
 
         /// <summary>
-        /// 组装要发送的数据帧
+        /// 封装完整的帧
         /// </summary>
-        /// <param name="macNumber"></param>
-        /// <param name="startSensorNumber"></param>
-        /// <param name="byteCount"></param>
+        /// <param name="clientDataInfo"></param>
         /// <returns></returns>
-        public byte[] CombineComputerFrame(byte macNumber, byte[] startSensorNumber, byte[] byteCount)
+        public List<byte[]> CombinedFrame(ClientDataInfo clientDataInfo)
         {
-            ClientFrameInfo clientFrameInfo = new ClientFrameInfo();
-            clientFrameInfo.startBytes = new byte[] { 00, 00, 00, 00, 00 };
-            clientFrameInfo.length = 0x06;
-            clientFrameInfo.macNumber = macNumber;
-            clientFrameInfo.startSensorNumber = startSensorNumber;
-            clientFrameInfo.byteCount = byteCount;
-            byte[] frame = frameHandle.CombineFrame(clientFrameInfo);
-            return frame;
+            List<byte[]> frameList = new List<byte[]>();
+            byte[] masterCallFrame = frameHandle.CombineComputerFrame(clientDataInfo.macNumber, clientDataInfo.startSensorNumber, clientDataInfo.byteCount);
+            frameList.Add(masterCallFrame);
+            return frameList;
         }
-        
+
         /// <summary>
-        /// 发送组装好的数据帧
+        /// 发送帧
         /// </summary>
         /// <param name="socket"></param>
-        /// <param name="frame"></param>
-        public void Send(Socket socket, byte[] frame)
+        /// <param name="frameList"></param>
+        public void Send(Socket socket, List<byte[]> frameList)
         {
-            socket.Send(frame);
+            foreach (byte[] frame in frameList)
+            {
+                socket.Send(frame);
+            }
         }
     }
 }

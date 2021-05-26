@@ -8,7 +8,7 @@ namespace ModbusTCP_Client
 {
     public class ReciveAndAnalysis
     {
-        FrameHandle frameHandle = new FrameHandle();
+        private FrameHandle frameHandle = new FrameHandle();
 
         /// <summary>
         /// 获取接收到的帧
@@ -38,7 +38,6 @@ namespace ModbusTCP_Client
             {
                 if (socket.Available <= 0)
                 {
-                    socket.Disconnect(true);
                     return null;
                 }
             }
@@ -52,22 +51,68 @@ namespace ModbusTCP_Client
         /// </summary>
         /// <param name="frameList"></param>
         /// <returns></returns>
-        public List<byte[]> GetTotalDataList(byte[] frames)
+        public List<ServerDataInfo> GetServerDataInfoList(byte[] frames)
         {
-            List<byte[]> dataList = new List<byte[]>();
+            List<ServerDataInfo> serverDataInfos = new List<ServerDataInfo>();
             List<byte[]> frameList = frameHandle.DivideFrames(frames);
             foreach (byte[] frame in frameList)
             {
+                //获取帧中的信息
                 ServerFrameInfo serverFrameInfo = frameHandle.DivideFrame(frame);
-                byte[] data = serverFrameInfo.data.ToArray();
-                List<byte[]> dList = frameHandle.GetDataList(data);
+                //获取帧中的数据
+                List<byte[]> dList = frameHandle.GetDataList(serverFrameInfo.data.ToArray());
                 if (dList == null)
                 {
                     return null;
                 }
-                dataList.AddRange(dList);
+                ServerDataInfo serverDataInfo = new ServerDataInfo();
+                serverDataInfo.macNumber = serverFrameInfo.macNumber;
+                serverDataInfo.data.AddRange(dList);
+                serverDataInfos.Add(serverDataInfo);
             }
-            return dataList;
+            return serverDataInfos;
+        }
+    }
+    public class ServerDataInfo
+    {
+        public List<byte[]> data = new List<byte[]>();
+        public byte macNumber = 0x00;
+
+        public override bool Equals(object obj)
+        {
+            bool isEqual = false;
+            if (macNumber == ((ServerDataInfo)obj).macNumber)
+            {
+                isEqual = true;
+            }
+            return isEqual;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(macNumber);
+        }
+    }
+
+    public class ClientDataInfo
+    {
+        public byte[] startSensorNumber = new byte[2];
+        public byte[] byteCount = new byte[2];
+        public byte macNumber = 0x00;
+
+        public override bool Equals(object obj)
+        {
+            bool isEqual = false;
+            if (macNumber == ((ClientDataInfo)obj).macNumber)
+            {
+                isEqual = true;
+            }
+            return isEqual;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(macNumber);
         }
     }
 }

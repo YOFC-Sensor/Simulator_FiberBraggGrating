@@ -14,8 +14,13 @@ namespace ModbusTCP_Client
         public static ComposeAndSend composeAndSend = new ComposeAndSend();
         public static ReciveAndAnalysis reciveAndAnalysis = new ReciveAndAnalysis();
         public static List<MacInfo> macInfoList = new List<MacInfo>();//当前设备列表
-        public static int currentSelectIndex = -1;
         public static string xmlPath = @".\Mac.xml";//xml配置文件路径
+        public static int currentIndex = -1;//当前启用的设备下标
+        public static int currentMacNumber = 0;//当前启用的设备编号
+        public static int currentStartSensorNumber = 0;//当前启用的起始传感器编号
+        public static int currentSensorCount = 0;//当前启用的传感器个数
+        public static int clientState = 0;
+        public static Mutex mtu = new Mutex();//线程锁
         public ClientForm()
         {
             InitializeComponent();
@@ -29,8 +34,6 @@ namespace ModbusTCP_Client
             Refresh_Mac_Button.Click += Refresh_Mac_Button_Click;
             //启用设备按钮点击事件
             Get_Data_Button.Click += Get_Data_Button_Click;
-            //设备列表选择事件
-            Mac_ListView.SelectedIndexChanged += Mac_ListView_SelectedIndexChanged;
         }
 
         /*
@@ -69,32 +72,96 @@ namespace ModbusTCP_Client
 
         public void Get_Data_Button_Click(Object sender, EventArgs e)
         {
-            MacInfo macInfo = macInfoList[currentSelectIndex];
-            macInfo.isCycleSend = true;
-            Thread t = new Thread(() => CycleSendAndRecv(macInfo, this));
-        }
-
-        public void Mac_ListView_SelectedIndexChanged(Object sender, EventArgs e)
-        {
-            if (((ListView)sender).SelectedItems.Count != 0)
+            string startSensorNumberStr = Start_Sensor_Number_TextBox.Text;
+            string sensorCountStr = Sensor_Count_TextBox.Text;
+            if (startSensorNumberStr == "" || sensorCountStr == "")
             {
-                currentSelectIndex = ((ListView)sender).SelectedItems[0].Index;
-                Recv_TextBox.Text = macInfoList[currentSelectIndex].message;
-                if (macInfoList[currentSelectIndex].isCycleSend)
-                {
-                    Get_Data_Button.Text = "关闭通道";
-                }
-                else
-                {
-                    Get_Data_Button.Text = "打开通道";
-                }
-                Get_Data_Button.Enabled = true;
+                MessageBox.Show("请先填写起始传感器编号和传感器个数！");
+                return;
+            }
+            if (startSensorNumberStr.Length != 5)
+            {
+                MessageBox.Show("请填写正确的传感器编号的长度为5！");
+                return;
+            }
+            string macNumberStr = startSensorNumberStr.Substring(0, 3);
+            if (!isSerSorNumberAndSensorCountCorrect(macNumberStr, sensorCountStr, startSensorNumberStr))
+            {
+                return;
+            }
+            ClientDataInfo clientDataInfo = new ClientDataInfo();
+            clientDataInfo.macNumber = (byte)currentMacNumber;
+            clientDataInfo.startSensorNumber = SensorNumberToByte2(currentStartSensorNumber);
+            clientDataInfo.byteCount = IntToByte2(currentSensorCount * 2);
+            //查找对应的设备的下表
+            int index = findMacIndex(clientDataInfo);
+            if (index == -1)
+            {
+                MessageBox.Show("未找该传感器所在的设备！");
+                return;
+            }
+            //获取设备信息
+            MacInfo macInfo = macInfoList[index];
+            if (clientState == 0)
+            {
+                //初始化设备
+                macInfo.macNumber = clientDataInfo.macNumber;
+                macInfo.startSensorNumber = clientDataInfo.startSensorNumber;
+                macInfo.byteCount = clientDataInfo.byteCount;
+                macInfo.isCycleSend = true;
+                //开始循环发送和接受数据
+                Thread t = new Thread(() => CycleSendAndRecv(macInfo, clientDataInfo, this));
+                t.IsBackground = true;
+                t.Start();
             }
             else
             {
-                Get_Data_Button.Text = "打开通道";
-                Get_Data_Button.Enabled = false;
+                macInfo.isCycleSend = false;
             }
+        }
+
+        /// <summary>
+        /// 判断起始传感器编号和传感器个数是否填写正确
+        /// </summary>
+        /// <param name="macNumberStr"></param>
+        /// <param name="sensorCountStr"></param>
+        /// <param name="startSensorNumberStr"></param>
+        /// <returns></returns>
+        public bool isSerSorNumberAndSensorCountCorrect(string macNumberStr, string sensorCountStr, string startSensorNumberStr)
+        {
+            try
+            {
+                currentMacNumber = int.Parse(macNumberStr);
+                currentSensorCount = int.Parse(sensorCountStr);
+                currentStartSensorNumber = int.Parse(startSensorNumberStr);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("请填写正确的传感器编号和传感器的个数！" + ex.Message);
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 查找传感器对应的下标
+        /// </summary>
+        /// <param name="clientDataInfo"></param>
+        /// <returns></returns>
+        public int findMacIndex(ClientDataInfo clientDataInfo)
+        {
+            int index = -1;
+            foreach (MacInfo mac in macInfoList)
+            {
+                ClientDataInfo preClientDataInfo = new ClientDataInfo();
+                preClientDataInfo.macNumber = mac.macNumber;
+                if (preClientDataInfo.Equals(clientDataInfo))
+                {
+                    index = macInfoList.IndexOf(mac);
+                    break;
+                }
+            }
+            return index;
         }
 
         /// <summary>
@@ -107,9 +174,8 @@ namespace ModbusTCP_Client
             {
                 ListViewItem listViewItem = new ListViewItem();
                 listViewItem.Text = "";
-                string numberStr = macInfo.serverNumber.ToString("X");
                 listViewItem.SubItems.Add(macInfo.name);
-                listViewItem.SubItems.Add(numberStr.Length > 1 ? numberStr : "0" + numberStr);
+                listViewItem.SubItems.Add("未配置");
                 listViewItem.SubItems.Add(macInfo.serverPoint.ToString());
                 listViewItem.SubItems.Add("未连接");
                 Mac_ListView.Items.Add(listViewItem);
@@ -125,25 +191,12 @@ namespace ModbusTCP_Client
         /// </summary>
         public void RemoveMac()
         {
-            for (int i = macInfoList.Count - 1; i >= 0; i++)
+            for (int i = macInfoList.Count - 1; i >= 0; i--)
             {
                 macInfoList.Remove(macInfoList[i]);
                 Mac_ListView.EndInvoke(Mac_ListView.BeginInvoke(new Action(() => {
                     Mac_ListView.Items.Remove(Mac_ListView.Items[i]);
                 })));
-                if (currentSelectIndex == i)
-                {
-                    if (i == 0)
-                    {
-                        currentSelectIndex = -1;
-                    }
-                    else
-                    {
-                        Mac_ListView.EndInvoke(Mac_ListView.BeginInvoke(new Action(() => {
-                            Mac_ListView.Items[currentSelectIndex - 1].Selected = true;
-                        })));
-                    }
-                }
             }
         }
 
@@ -174,9 +227,10 @@ namespace ModbusTCP_Client
                         continue;
                     }
                     Mac_ListView.EndInvoke(Mac_ListView.BeginInvoke(new Action(() => {
-                        Mac_ListView.Items[i].SubItems[4].Text = "已连接";
+                        Mac_ListView.Items[i].SubItems[4].Text = "未启用";
                     })));
-                    Thread t = new Thread(() => CycleReciveData(macInfoList[i], this));
+                    MacInfo macInfo = macInfoList[i];
+                    Thread t = new Thread(() => CycleReciveData(macInfo));
                     t.IsBackground = true;
                     t.Start();
                 }
@@ -184,46 +238,27 @@ namespace ModbusTCP_Client
         }
 
         /// <summary>
-        /// 判断填写的的信息是否正确
+        /// 判断设备是否准备删除
         /// </summary>
-        /// <param name="startSensorNumberStr"></param>
-        /// <param name="sensorCountStr"></param>
-        /// <returns></returns>
-        public bool isCanSend(MacInfo macInfo, string startSensorNumberStr, string sensorCountStr)
+        /// <param name="macInfo"></param>
+        /// <param name="form"></param>
+        public static void JudgeAlive(MacInfo macInfo, ClientForm form)
         {
-            if (startSensorNumberStr.Length != 5)
+            int index = macInfoList.IndexOf(macInfo);
+            while (true)
             {
-                MessageBox.Show("请填写正确的起始传感器编号！");
-                return false;
+                if (macInfo.isPrepDisconnect)
+                {
+                    macInfo.socket.Close();
+                    mtu.WaitOne();
+                    form.Mac_ListView.EndInvoke(form.Mac_ListView.BeginInvoke(new Action(() => {
+                        form.Mac_ListView.Items[index].SubItems[4].Text = "未连接";
+                    })));
+                    mtu.ReleaseMutex();
+                    return;
+                }
+                Thread.Sleep(500);
             }
-            int startSensorNumber = 0;
-            try
-            {
-                startSensorNumber = int.Parse(startSensorNumberStr);
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("请填写正确的起始传感器编号！");
-                return false;
-            }
-            int sensorCount = 0;
-            try
-            {
-                sensorCount = int.Parse(sensorCountStr);
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("请填写正确的传感器个数！");
-                return false;
-            }
-            if (sensorCount > 65535)
-            {
-                MessageBox.Show("请填写正确的传感器个数！");
-                return false;
-            }
-            macInfo.startSensorNumber = IntToByte2(startSensorNumber);
-            macInfo.sensorCount = IntToByte2(sensorCount); 
-            return true;
         }
 
         /// <summary>
@@ -231,39 +266,32 @@ namespace ModbusTCP_Client
         /// </summary>
         /// <param name="macInfo"></param>
         /// <param name="form"></param>
-        public static void CycleSendAndRecv(MacInfo macInfo, ClientForm form)
+        public static void CycleSendAndRecv(MacInfo macInfo, ClientDataInfo clientDataInfo, ClientForm form)
         {
-            string startSensorNumberStr = "";
-            form.Start_Sensor_Number_TextBox.EndInvoke(form.Start_Sensor_Number_TextBox.BeginInvoke(new Action(() => {
-                startSensorNumberStr = form.Start_Sensor_Number_TextBox.Text;
+            //改变控件状态
+            form.Get_Data_Button.EndInvoke(form.Get_Data_Button.BeginInvoke(new Action(() => {
+                form.Get_Data_Button.Text = "关闭通道";
             })));
-            string sensorCountStr = "";
-            form.Sensor_Count_TextBox.EndInvoke(form.Sensor_Count_TextBox.BeginInvoke(new Action(() => {
-                sensorCountStr = form.Sensor_Count_TextBox.Text;
-            })));
-            int index = macInfoList.IndexOf(macInfo);
-            if (!form.isCanSend(macInfo, startSensorNumberStr, sensorCountStr))
-            {
-                MessageBox.Show("请填写正确的信息！");
-                return;
-            }
             form.Start_Sensor_Number_TextBox.EndInvoke(form.Start_Sensor_Number_TextBox.BeginInvoke(new Action(() => {
                 form.Start_Sensor_Number_TextBox.ReadOnly = true;
             })));
             form.Sensor_Count_TextBox.EndInvoke(form.Sensor_Count_TextBox.BeginInvoke(new Action(() => {
                 form.Sensor_Count_TextBox.ReadOnly = true;
             })));
+            //循环发送和接受数据
+            int index = macInfoList.IndexOf(macInfo);
             while (macInfo.isCycleSend)
             {
                 //发送数据请求帧
-                macInfo.socket.Send(composeAndSend.CombineComputerFrame(macInfo.serverNumber, macInfo.startSensorNumber, macInfo.sensorCount));
-                //获取完整信息
-                int tempDataLen = 0;
+                composeAndSend.Send(macInfo.socket, composeAndSend.CombinedFrame(clientDataInfo));
+                //获取完整的消息
+                int tempCount = 0;
                 do
                 {
-                    tempDataLen = macInfo.recvData.Count;
+                    tempCount = macInfo.recvData.Count;
                     Thread.Sleep(500);
-                } while (tempDataLen != macInfo.recvData.Count);
+                } while (tempCount != macInfo.recvData.Count);
+                //若没接受到消息则重发
                 if (macInfo.recvData.Count == 0)
                 {
                     macInfo.reSendCount++;
@@ -277,46 +305,39 @@ namespace ModbusTCP_Client
                     continue;
                 }
                 macInfo.reSendCount = 0;
-                byte[] realData = macInfo.recvData.ToArray();
-                //清除接收缓冲区
-                macInfo.recvData.Clear();
                 //拼接16进制字符串
-                string recvStr = "";
-                foreach (byte data in realData)
+                foreach (byte data in macInfo.recvData)
                 {
                     string tempStr = data.ToString("X");
                     if (tempStr.Length < 2)
                     {
                         tempStr = "0" + tempStr;
                     }
-                    recvStr += tempStr;
+                    macInfo.message += tempStr;
                 }
-                recvStr += "\r\n";
-                //将接收到的消息放入内存
-                macInfo.message += recvStr;
-                macInfo.recvCount++;
+                macInfo.message += "\r\n";
                 //显示消息
-                if (index == currentSelectIndex)
-                {
-                    form.Recv_TextBox.EndInvoke(form.Recv_TextBox.BeginInvoke(new Action(() => {
-                        form.Recv_TextBox.Text = macInfo.message;
-                    })));
-                }
+                form.Recv_TextBox.EndInvoke(form.Recv_TextBox.BeginInvoke(new Action(() => {
+                    form.Recv_TextBox.Text = macInfo.message;
+                })));
                 //获取所有帧中的重要数据
-                List<byte[]> totalDataList = reciveAndAnalysis.GetTotalDataList(realData);
+                List<ServerDataInfo> serverDataInfos = reciveAndAnalysis.GetServerDataInfoList(macInfo.recvData.ToArray());
+                //清空缓冲区
+                macInfo.recvData.Clear();
             }
+            //改变控件状态
+            form.Get_Data_Button.EndInvoke(form.Get_Data_Button.BeginInvoke(new Action(() => {
+                form.Get_Data_Button.Text = "打开通道";
+            })));
             form.Start_Sensor_Number_TextBox.EndInvoke(form.Start_Sensor_Number_TextBox.BeginInvoke(new Action(() => {
                 form.Start_Sensor_Number_TextBox.ReadOnly = false;
             })));
             form.Sensor_Count_TextBox.EndInvoke(form.Sensor_Count_TextBox.BeginInvoke(new Action(() => {
                 form.Sensor_Count_TextBox.ReadOnly = false;
             })));
-            if (macInfo.isSocketError || macInfo.isUserDisconnect)
+            if (macInfo.isUserDisconnect || macInfo.isSocketError)
             {
-                macInfo.socket.Disconnect(true);
-                form.Mac_ListView.EndInvoke(form.Mac_ListView.BeginInvoke(new Action(() => {
-                    form.Mac_ListView.Items[index].SubItems[4].Text = "未连接";
-                })));
+                macInfo.isPrepDisconnect = true;
             }
         }
 
@@ -324,7 +345,7 @@ namespace ModbusTCP_Client
         /// 循环接收数据
         /// </summary>
         /// <param name="macInfo"></param>
-        public static void CycleReciveData(MacInfo macInfo, ClientForm form)
+        public static void CycleReciveData(MacInfo macInfo)
         {
             int index = macInfoList.IndexOf(macInfo);
             while (macInfo.socket.Connected)
@@ -337,19 +358,13 @@ namespace ModbusTCP_Client
                 }
                 macInfo.recvData.AddRange(recvData);
             }
-            if (macInfo.isCycleSend)
+            if (!macInfo.isCycleSend)
             {
                 macInfo.isCycleSend = false;
             }
             else
             {
-                if (macInfo.isSocketError || macInfo.isUserDisconnect)
-                {
-                    macInfo.socket.Disconnect(true);
-                    form.Mac_ListView.EndInvoke(form.Mac_ListView.BeginInvoke(new Action(() => {
-                        form.Mac_ListView.Items[index].SubItems[4].Text = "未连接";
-                    })));
-                }
+                macInfo.isPrepDisconnect = true;
             }
         }
 
@@ -402,7 +417,7 @@ namespace ModbusTCP_Client
                 macInfo.name = server.GetAttribute("name");
                 IPAddress ipAddress = IPAddress.Parse(server.GetAttribute("serverIPAddr"));
                 int port = int.Parse(server.GetAttribute("serverPort"));
-                macInfo.serverNumber = 0x01;
+                macInfo.macNumber = 0x00;
                 macInfo.serverPoint = new IPEndPoint(ipAddress, port);
                 macInfos.Add(macInfo);
             }

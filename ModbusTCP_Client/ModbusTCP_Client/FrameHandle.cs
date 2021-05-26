@@ -54,9 +54,10 @@ namespace ModbusTCP_Client
             }
             else
             {
-                for (int i = 0; i < data.Length / 4; i++)
+                int div = data.Length / 4;
+                for (int i = 0; i < div; i++)
                 {
-                    byte[] d = data.Skip(i * data.Length / 4).Take(data.Length / 4).ToArray();
+                    byte[] d = data.Skip(i * div).Take(div).ToArray();
                     dataList.Add(d);
                 }
             }
@@ -78,6 +79,25 @@ namespace ModbusTCP_Client
             frameList.AddRange(clientFrameInfo.startSensorNumber);
             frameList.AddRange(clientFrameInfo.byteCount);
             return frameList.ToArray();
+        }
+
+        /// <summary>
+        /// 组装上位机的数据请求帧
+        /// </summary>
+        /// <param name="macNumber"></param>
+        /// <param name="startSensorNumber"></param>
+        /// <param name="byteCount"></param>
+        /// <returns></returns>
+        public byte[] CombineComputerFrame(byte macNumber, byte[] startSensorNumber, byte[] byteCount)
+        {
+            ClientFrameInfo clientFrameInfo = new ClientFrameInfo();
+            clientFrameInfo.startBytes = new byte[] { 00, 00, 00, 00, 00 };
+            clientFrameInfo.length = 0x06;
+            clientFrameInfo.macNumber = macNumber;
+            clientFrameInfo.startSensorNumber = startSensorNumber;
+            clientFrameInfo.byteCount = byteCount;
+            byte[] frame = CombineFrame(clientFrameInfo);
+            return frame;
         }
     }
 
