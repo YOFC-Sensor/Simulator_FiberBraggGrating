@@ -44,11 +44,12 @@ namespace ModbusTCP_Client
             this.Mac_Number = new System.Windows.Forms.ColumnHeader();
             this.Mac_Addr = new System.Windows.Forms.ColumnHeader();
             this.Mac_State = new System.Windows.Forms.ColumnHeader();
+            this.Edit_Mac_Button = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Disconnect_Button
             // 
-            this.Disconnect_Button.Location = new System.Drawing.Point(141, 12);
+            this.Disconnect_Button.Location = new System.Drawing.Point(100, 12);
             this.Disconnect_Button.Name = "Disconnect_Button";
             this.Disconnect_Button.Size = new System.Drawing.Size(75, 23);
             this.Disconnect_Button.TabIndex = 0;
@@ -106,7 +107,7 @@ namespace ModbusTCP_Client
             // 
             // Refresh_Mac_Button
             // 
-            this.Refresh_Mac_Button.Location = new System.Drawing.Point(274, 12);
+            this.Refresh_Mac_Button.Location = new System.Drawing.Point(188, 12);
             this.Refresh_Mac_Button.Name = "Refresh_Mac_Button";
             this.Refresh_Mac_Button.Size = new System.Drawing.Size(75, 23);
             this.Refresh_Mac_Button.TabIndex = 1;
@@ -167,11 +168,21 @@ namespace ModbusTCP_Client
             this.Mac_State.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.Mac_State.Width = 50;
             // 
+            // Edit_Mac_Button
+            // 
+            this.Edit_Mac_Button.Location = new System.Drawing.Point(274, 12);
+            this.Edit_Mac_Button.Name = "Edit_Mac_Button";
+            this.Edit_Mac_Button.Size = new System.Drawing.Size(75, 23);
+            this.Edit_Mac_Button.TabIndex = 10;
+            this.Edit_Mac_Button.Text = "修改设备";
+            this.Edit_Mac_Button.UseVisualStyleBackColor = true;
+            // 
             // ClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.Edit_Mac_Button);
             this.Controls.Add(this.Mac_ListView);
             this.Controls.Add(this.Connect_Button);
             this.Controls.Add(this.Refresh_Mac_Button);
@@ -206,6 +217,7 @@ namespace ModbusTCP_Client
         private System.Windows.Forms.ColumnHeader Mac_Addr;
         private System.Windows.Forms.ColumnHeader Mac_State;
         private System.Windows.Forms.ColumnHeader Mac_Number;
+        private System.Windows.Forms.Button Edit_Mac_Button;
     }
 }
 
