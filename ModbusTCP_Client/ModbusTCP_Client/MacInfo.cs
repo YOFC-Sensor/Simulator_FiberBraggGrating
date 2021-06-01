@@ -9,13 +9,11 @@ namespace ModbusTCP_Client
     public class MacInfo
     {
         public string name = "";
-        public byte macNumber = 0x00;
+        public byte macNumber = 0x01;
         public Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         public IPEndPoint serverPoint = null;
         public List<byte> recvData = new List<byte>();
-        public List<byte> data = new List<byte>();
-        public byte[] startSensorNumber = new byte[2];
-        public byte[] byteCount = new byte[2];
+        public List<int> sensorCountInfo = new List<int>();
         public int recvCount = 0;
         public int reSendCount = 0;
         public string message = "";

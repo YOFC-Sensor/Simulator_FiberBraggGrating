@@ -1,4 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <Root>
-	<Server name="Mac1" serverIPAddr="192.168.8.180" serverPort="502" />
+	<Server name="Mac1" serverIPAddr="192.168.8.180" serverPort="502">
+		<Channel sensorCount="10" />
+		<Channel sensorCount="10" />
+		<Channel sensorCount="10" />
+		<Channel sensorCount="10" />
+	</Server>
 </Root>
