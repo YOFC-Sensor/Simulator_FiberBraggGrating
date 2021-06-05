@@ -18,6 +18,8 @@ namespace ModbusTCP_Client
             editMac = form1Delegate;
             InitializeComponent();
             Number_TextBox.Text = currentSelectMacInfo.macNumber.ToString();
+            Start_Sensor_Number_TextBox.Text = currentSelectMacInfo.startSensorNumber;
+            Data_Count_TextBox.Text = currentSelectMacInfo.dataCount.ToString();
             //修改完成按钮点击函数
             Edit_MAC_OK_Button.Click += Edit_MAC_OK_Button_Click;
             //取消按钮点击事件
@@ -38,6 +40,10 @@ namespace ModbusTCP_Client
                     return;
                 }
                 currentSelectMacInfo.macNumber = (byte)intNumber;
+                string startSensorNumber = Start_Sensor_Number_TextBox.Text;
+                currentSelectMacInfo.startSensorNumber = startSensorNumber;
+                int dataCount = int.Parse(Data_Count_TextBox.Text);
+                currentSelectMacInfo.dataCount = dataCount;
             }
             catch (Exception ex)
             {

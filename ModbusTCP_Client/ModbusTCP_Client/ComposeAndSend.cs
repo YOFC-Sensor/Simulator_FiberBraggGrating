@@ -14,10 +14,10 @@ namespace ModbusTCP_Client
         /// </summary>
         /// <param name="clientDataInfo"></param>
         /// <returns></returns>
-        public List<byte[]> CombinedFrame(ClientDataInfo clientDataInfo)
+        public List<byte[]> CombinedFrame(DataInfo clientDataInfo)
         {
             List<byte[]> frameList = new List<byte[]>();
-            byte[] masterCallFrame = frameHandle.CombineComputerFrame(clientDataInfo.macNumber, clientDataInfo.startSensorNumber, clientDataInfo.byteCount);
+            byte[] masterCallFrame = frameHandle.CombineComputerFrame(clientDataInfo.macNumber, clientDataInfo.startSensorNumber, clientDataInfo.dataCount);
             frameList.Add(masterCallFrame);
             return frameList;
         }
