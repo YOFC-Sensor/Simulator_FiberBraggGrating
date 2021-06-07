@@ -6,4 +6,8 @@
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Include="bin\Debug\netcoreapp3.1\SensorInfos.xml" />
+  </ItemGroup>
+
 </Project>
