@@ -1,53 +1,53 @@
 <?xml version="1.0" encoding="utf-8" ?> 
 <Root>
-	<Mac iPAddr="0.0.0.0" port="502">
+	<Mac name="Mac1" ipAddr="0.0.0.0" port="502" number="01">
 		<Channel>
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
 		</Channel>
 		<Channel>
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
 		</Channel>
 		<Channel>
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
 		</Channel>
 		<Channel>
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
-			<Sensor data="12.3456,321.6789" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
 		</Channel>
 	</Mac>
 </Root>

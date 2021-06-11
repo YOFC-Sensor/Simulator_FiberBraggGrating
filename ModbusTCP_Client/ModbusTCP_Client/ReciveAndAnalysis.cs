@@ -12,7 +12,7 @@ namespace ModbusTCP_Client
         private FrameHandle frameHandle = new FrameHandle();
 
         /// <summary>
-        /// 2字节转小数
+        /// 2字节转整数
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
@@ -22,6 +22,11 @@ namespace ModbusTCP_Client
             return result;
         }
 
+        /// <summary>
+        /// 4字节转小数
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public double Byte4ToDouble(byte[] data)
         {
             double result = (double)((data[0] * 256 + data[1]) * 65536 + (data[2] * 256 + data[3])) / 10000.0;
@@ -67,7 +72,7 @@ namespace ModbusTCP_Client
         /// <summary>
         /// 将数据分割成列表
         /// </summary>
-        /// <param name="frameList"></param>
+        /// <param name="frames"></param>
         /// <returns></returns>
         public List<DataInfo> GetDataInfoList(byte[] frames)
         {

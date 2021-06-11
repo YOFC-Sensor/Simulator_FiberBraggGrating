@@ -17,10 +17,6 @@ namespace ModbusTCP_Client
         public static List<MacInfo> macInfoList = new List<MacInfo>();//当前设备列表
         public static string xmlPath = @".\Mac.xml";//xml配置文件路径
         public static int currentSelectIndex = -1; // 当前选择的设备下标
-        public static int currentMacNumber = 0;//当前启用的设备编号
-        public static int currentStartSensorNumber = 0;//当前启用的起始传感器编号
-        public static int currentSensorCount = 0;//当前启用的传感器个数
-        public static int clientState = 0;
         public static Mutex mtu = new Mutex();//线程锁
         public ClientForm()
         {

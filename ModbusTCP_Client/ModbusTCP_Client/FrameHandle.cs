@@ -7,13 +7,18 @@ namespace ModbusTCP_Client
 {
     public class FrameHandle
     {
+        /// <summary>
+        /// 将信息分割成多个帧
+        /// </summary>
+        /// <param name="frames"></param>
+        /// <returns></returns>
         public List<byte[]> DivideFrames(byte[] frames)
         {
             List<byte[]> frameList = new List<byte[]>();
             while (frames.Length > 0)
             {
                 int length = frames[5];
-                int totalLength = length + 5;
+                int totalLength = length + 6;
                 byte[] frame = frames.Skip(0).Take(totalLength).ToArray();
                 frameList.Add(frame);
                 List<byte> listFrames = frames.ToList();
@@ -54,7 +59,7 @@ namespace ModbusTCP_Client
             }
             else
             {
-                int div = data.Length / 4;
+                int div = 4;
                 for (int i = 0; i < div; i++)
                 {
                     byte[] d = data.Skip(i * div).Take(div).ToArray();
@@ -77,7 +82,7 @@ namespace ModbusTCP_Client
             frameList.Add(clientFrameInfo.macNumber);
             frameList.Add(clientFrameInfo.functionCode);
             frameList.AddRange(clientFrameInfo.startSensorNumber);
-            frameList.AddRange(clientFrameInfo.byteCount);
+            frameList.AddRange(clientFrameInfo.dataCount);
             return frameList.ToArray();
         }
 
@@ -95,7 +100,7 @@ namespace ModbusTCP_Client
             clientFrameInfo.length = 0x06;
             clientFrameInfo.macNumber = macNumber;
             clientFrameInfo.startSensorNumber = startSensorNumber;
-            clientFrameInfo.byteCount = byteCount;
+            clientFrameInfo.dataCount = byteCount;
             byte[] frame = CombineFrame(clientFrameInfo);
             return frame;
         }
@@ -108,7 +113,7 @@ namespace ModbusTCP_Client
         public byte macNumber = 0x00;
         public byte functionCode = 0x03;
         public byte[] startSensorNumber = new byte[2];
-        public byte[] byteCount = new byte[2];
+        public byte[] dataCount = new byte[2];
     }
 
     public class ServerFrameInfo

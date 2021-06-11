@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <Root>
-	<Server name="Mac1" serverIPAddr="192.168.1.149" serverPort="502">
+	<Server name="Mac1" serverIPAddr="192.168.0.101" serverPort="502">
 		<Channel channelName="Channel1" sensorCount="10" url="" />
 		<Channel channelName="Channel2" sensorCount="10" url="" />
 		<Channel channelName="Channel3" sensorCount="10" url="" />
