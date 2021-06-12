@@ -87,10 +87,11 @@ namespace ModbusTCP_Server
             foreach (byte[] frame in frameList)
             {
                 //获取帧中的信息
-                ClientFrameInfo serverFrameInfo = frameHandle.DivideFrame(frame);
+                ClientFrameInfo clientFrameInfo = frameHandle.DivideFrame(frame);
                 DataInfo dataInfo = new DataInfo();
-                dataInfo.startSensorNumber = serverFrameInfo.startSensorNumber;
-                dataInfo.dataCount = serverFrameInfo.dataCount;
+                dataInfo.macNumber = clientFrameInfo.macNumber;
+                dataInfo.startSensorNumber = clientFrameInfo.startSensorNumber;
+                dataInfo.dataCount = clientFrameInfo.dataCount;
                 dataInfos.Add(dataInfo);
             }
             return dataInfos;

@@ -169,22 +169,23 @@ namespace ModbusTCP_Server
         /// <param name="result"></param>
         public void AcceptCallBack(IAsyncResult result)
         {
-            Socket serverSocket = (Socket)result.AsyncState;
-            Socket clientSocket = null;
             try
             {
-                clientSocket = serverSocket.EndAccept(result);
+                Socket serverSocket = (Socket)result.AsyncState;
+                Socket clientSocket = serverSocket.EndAccept(result);
+                List<Socket> serverSockets = macInfoList.Select(e => e.serverSocket).ToList();
+                int index = serverSockets.IndexOf(serverSocket);
+                macInfoList[index].clientSockets.Add(clientSocket);
+                Thread t = new Thread(() => CycleReciveAndSendData(clientSocket, macInfoList[index], this));
+                t.IsBackground = true;
+                t.Start();
+                serverSocket.BeginAccept(AcceptCallBack, serverSocket);
             }
             catch (Exception)
             {
                 return;
             }
-            List<Socket> serverSockets = macInfoList.Select(e => e.serverSocket).ToList();
-            int index = serverSockets.IndexOf(serverSocket);
-            macInfoList[index].clientSockets.Add(clientSocket);
-            Thread t = new Thread(() => CycleReciveAndSendData(clientSocket, macInfoList[index], this));
-            t.IsBackground = true;
-            t.Start();
+            
         }
 
         /// <summary>
@@ -194,15 +195,14 @@ namespace ModbusTCP_Server
         public static void CycleReciveAndSendData(Socket clientSocket, MacInfo macInfo, ServerForm form)
         {
             int index = macInfoList.IndexOf(macInfo);
+            macInfo.message = "";
             while (clientSocket.Connected)
             {
-                mtu.WaitOne();
                 byte[] recvData = reciveAndAnalysis.ReciveFrame(clientSocket);
                 if (recvData == null)
                 {
                     clientSocket.Close();
                     macInfo.clientSockets.Remove(clientSocket);
-                    mtu.ReleaseMutex();
                     break;
                 }
                 macInfo.recvData.AddRange(recvData);
@@ -242,7 +242,6 @@ namespace ModbusTCP_Server
                     sendDataInfo.data = dataList;
                     composeAndSend.Send(clientSocket ,composeAndSend.CombinedFrame(sendDataInfo));
                 }
-                mtu.ReleaseMutex();
             }
         }
 

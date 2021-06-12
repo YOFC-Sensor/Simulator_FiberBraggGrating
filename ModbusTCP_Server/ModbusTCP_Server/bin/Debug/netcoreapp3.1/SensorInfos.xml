@@ -50,4 +50,54 @@
 			<Sensor data="12.3456" />
 		</Channel>
 	</Mac>
+	<Mac name="Mac2" ipAddr="0.0.0.0" port="503" number="01">
+		<Channel>
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+		</Channel>
+		<Channel>
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+		</Channel>
+		<Channel>
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+		</Channel>
+		<Channel>
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+			<Sensor data="12.3456" />
+		</Channel>
+	</Mac>
 </Root>

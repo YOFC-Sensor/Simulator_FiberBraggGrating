@@ -60,7 +60,7 @@ namespace ModbusTCP_Client
             else
             {
                 int div = 4;
-                for (int i = 0; i < div; i++)
+                for (int i = 0; i < data.Length / 4; i++)
                 {
                     byte[] d = data.Skip(i * div).Take(div).ToArray();
                     dataList.Add(d);

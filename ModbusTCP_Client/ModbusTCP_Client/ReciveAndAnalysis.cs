@@ -116,7 +116,7 @@ namespace ModbusTCP_Client
                     {
                         for (int j = startSensorIndex; j < macInfo.channelInfos[i].sensorCount; j++)
                         {
-                            string dataName = macInfo.name + "_" + (i < 10 ? "00" + i.ToString() : "0" + i.ToString()) + (j < 10 ? "0" + j.ToString() : j.ToString());
+                            string dataName = macInfo.name + "_" + i.ToString() + "_" + j.ToString();
                             jsonData.Add(dataName, Byte4ToDouble(dataInfos[i].data[j]));
                             totalSensorCount++;
                             if (totalSensorCount >= macInfo.dataCount / 2)

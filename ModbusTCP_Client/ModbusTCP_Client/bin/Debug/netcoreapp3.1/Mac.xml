@@ -6,4 +6,10 @@
 		<Channel channelName="Channel3" sensorCount="10" url="" />
 		<Channel channelName="Channel4" sensorCount="10" url="" />
 	</Server>
+	<Server name="Mac2" serverIPAddr="192.168.0.101" serverPort="503">
+		<Channel channelName="Channel1" sensorCount="10" url="" />
+		<Channel channelName="Channel2" sensorCount="10" url="" />
+		<Channel channelName="Channel3" sensorCount="10" url="" />
+		<Channel channelName="Channel4" sensorCount="10" url="" />
+	</Server>
 </Root>

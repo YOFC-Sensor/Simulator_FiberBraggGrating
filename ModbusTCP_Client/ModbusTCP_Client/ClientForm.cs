@@ -92,7 +92,6 @@ namespace ModbusTCP_Client
             {
                 if (Mac_ListView.Items[currentSelectIndex].SubItems[6].Text != "已启用")
                 {
-                    macInfoList[currentSelectIndex].isCycleSend = true;
                     Mac_ListView.Items[currentSelectIndex].SubItems[6].Text = "已启用";
                     ((Button)sender).Text = "关闭通道";
                     Edit_Mac_Button.Enabled = false;
@@ -103,6 +102,9 @@ namespace ModbusTCP_Client
                 }
                 else
                 {
+                    Mac_ListView.Items[currentSelectIndex].SubItems[6].Text = "未启用";
+                    ((Button)sender).Text = "打开通道";
+                    Edit_Mac_Button.Enabled = true;
                     macInfoList[currentSelectIndex].isCycleSend = false;
                 }
             }
@@ -113,6 +115,7 @@ namespace ModbusTCP_Client
             if (((ListView)sender).SelectedItems.Count != 0)
             {
                 currentSelectIndex = ((ListView)sender).SelectedItems[0].Index;
+                Recv_TextBox.Text = macInfoList[currentSelectIndex].message;
                 Edit_Mac_Button.Enabled = true;
                 Get_Data_Button.Enabled = true;
                 if (((ListView)sender).Items[currentSelectIndex].SubItems[6].Text == "未连接")
@@ -120,7 +123,7 @@ namespace ModbusTCP_Client
                     Get_Data_Button.Text = "打开通道";
                     Get_Data_Button.Enabled = false;
                 }
-                else if (((ListView)sender).Items[currentSelectIndex].SubItems[6].Text == "已开启")
+                else if (((ListView)sender).Items[currentSelectIndex].SubItems[6].Text == "已启用")
                 {
                     Get_Data_Button.Text = "关闭通道";
                     Edit_Mac_Button.Enabled = false;
@@ -248,6 +251,7 @@ namespace ModbusTCP_Client
         /// <param name="form"></param>
         public static void CycleSendAndRecv(MacInfo macInfo, ClientForm form)
         {
+            macInfo.message = "";
             //获取当前设备的下标
             int index = macInfoList.IndexOf(macInfo);
             //获取全部的Url
@@ -317,12 +321,7 @@ namespace ModbusTCP_Client
                     macInfo.recvCount = 0;
                 }
             }
-            form.Edit_Mac_Button.EndInvoke(form.Edit_Mac_Button.BeginInvoke(new Action(() => {
-                form.Edit_Mac_Button.Enabled = true;
-            })));
-            form.Get_Data_Button.EndInvoke(form.Get_Data_Button.BeginInvoke(new Action(() => {
-                form.Get_Data_Button.Text = "打开通道";
-            })));
+            macInfo.isCycleSend = false;
             if (macInfo.isSocketError || macInfo.isUserDisconnect)
             {
                 macInfo.socket.Close();
@@ -418,7 +417,7 @@ namespace ModbusTCP_Client
                 macInfo.macNumber = 0x01;
                 macInfo.serverPoint = new IPEndPoint(ipAddress, port);
                 List<ChannelInfo> channelInfos = new List<ChannelInfo>();
-                XmlNodeList xmlChannels = xmlRoot.SelectNodes("Channel");
+                XmlNodeList xmlChannels = server.SelectNodes("Channel");
                 foreach (XmlNode xmlChannel in xmlChannels)
                 {
                     XmlElement channel = (XmlElement)xmlChannel;

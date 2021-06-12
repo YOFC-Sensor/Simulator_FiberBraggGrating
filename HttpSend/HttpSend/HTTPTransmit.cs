@@ -11,7 +11,15 @@ namespace HttpSend
         public static string Send(string url, object data)
         {
             string jsonStr = JsonConvert.SerializeObject(data);
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            HttpWebRequest request = null;
+            try
+            {
+                request = (HttpWebRequest)WebRequest.Create(url);
+            }
+            catch (Exception)
+            {
+                return "fail";
+            }
             request.Method = "POST";
             request.ContentType = "application/json; charset=UTF-8";
             byte[] payload = Encoding.UTF8.GetBytes(jsonStr);
